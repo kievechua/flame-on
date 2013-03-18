@@ -1,4 +1,7 @@
 {
+    "meteor": {
+        "branch": "master"
+    },
     "name": "Flame On",
     "description": "Angular's hero that can handle Meteor's flame.",
     "author": "Kieve Chua",
