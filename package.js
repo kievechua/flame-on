@@ -1,5 +1,5 @@
 Package.describe({
-    summary: "Angularjs"
+    summary: "Angular's hero that can handle Meteor's flame."
 });
 
 Package.on_use(function (api) {

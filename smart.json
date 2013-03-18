@@ -2,7 +2,7 @@
     "meteor": {
         "branch": "master"
     },
-    "name": "Flame On",
+    "name": "flame-on",
     "description": "Angular's hero that can handle Meteor's flame.",
     "homepage": "https://github.com/kievechua/flame-on",
     "author": "Kieve Chua",
