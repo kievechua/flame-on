@@ -10,12 +10,12 @@ __meteor_bootstrap__.app
             var code;
 
             try {
-               code = fs.readFileSync(path.resolve('bundle/app.html'));
-            } catch(e) {
+                code = fs.readFileSync(path.resolve('bundle/app.html'));
+            } catch (e) {
                 try {
-                   code = fs.readFileSync(path.resolve('bundle/app.html'));
+                    code = fs.readFileSync(path.resolve('.meteor/local/build/app.html'));
                 } catch(eh) {
-                   code = fs.readFileSync(path.resolve('.meteor/local/heroku_build/app.html'));
+                    code = fs.readFileSync(path.resolve('.meteor/heroku_build/app/app.html'));
                 }
             }
 
