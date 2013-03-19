@@ -3,6 +3,6 @@
     "description": "Angular's hero that can handle Meteor's flame.",
     "homepage": "https://github.com/kievechua/flame-on",
     "author": "Kieve Chua",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "git": "https://github.com/kievechua/flame-on.git"
 }
