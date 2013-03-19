@@ -1,6 +1,7 @@
 var connect = __meteor_bootstrap__.require("connect");
 var fs = __meteor_bootstrap__.require("fs");
 var path = __meteor_bootstrap__.require("path");
+
 __meteor_bootstrap__.app
     .use(connect.query())
     .use(function (req, res, next) {
@@ -11,7 +12,11 @@ __meteor_bootstrap__.app
             try {
                code = fs.readFileSync(path.resolve('bundle/app.html'));
             } catch(e) {
-               code = fs.readFileSync(path.resolve('.meteor/local/build/app.html'));
+                try {
+                   code = fs.readFileSync(path.resolve('bundle/app.html'));
+                } catch(eh) {
+                   code = fs.readFileSync(path.resolve('.meteor/local/heroku_build/app.html'));
+                }
             }
 
             var angular = "";
@@ -28,7 +33,6 @@ __meteor_bootstrap__.app
 
             code = new String(code);
             code = code.replace("<body>", new String(angular));
-            // code = code.replace("<html>",'<html ng-app="meteorapp">');
 
             if (typeof __meteor_runtime_config__ !== 'undefined') {
                 code = code.replace(
@@ -42,6 +46,5 @@ __meteor_bootstrap__.app
             res.write(code);
             res.end();
             return;
-            //next();
-    }).run();
-});
+        }).run();
+    });
