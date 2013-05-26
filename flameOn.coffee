@@ -15,19 +15,19 @@ app.factory 'flameOn', ['$q', ($q) ->
 
                 col = collection.find(selector, opts)
                 col.observe({
-                    added: (item, i) ->
+                    addedAt: (item, i) ->
                         list.splice i, 0, item
 
                         d.resolve list
 
                         $scope.$apply() if !$scope.$$phase
-                    changed: (newDocument, atIndex, oldDocument) ->
+                    changedAt: (newDocument, oldDocument, atIndex) ->
                         list.splice atIndex, 1, newDocument
 
                         d.resolve list
 
                         $scope.$apply() if !$scope.$$phase
-                    moved: (document, oldIndex, newIndex) ->
+                    movedTo: (document, oldIndex, newIndex) ->
                         if newIndex < oldIndex
                             list.splice oldIndex, 1
                             list.splice newIndex, 0, document
@@ -38,7 +38,7 @@ app.factory 'flameOn', ['$q', ($q) ->
                         d.resolve list
 
                         $scope.$apply() if !$scope.$$phase
-                    removed: (oldDocument, atIndex) ->
+                    removedAt: (oldDocument, atIndex) ->
                         list.splice atIndex, 1
 
                         d.resolve list
