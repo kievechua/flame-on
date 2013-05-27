@@ -1,7 +1,7 @@
-var connect = Npm.require("connect");
-var fs = Npm.require("fs");
-var path = Npm.require("path");
-var Fiber = Npm.require("fibers");
+var connect = (typeof(Npm) == "undefined") ? __meteor_bootstrap__.require("connect") : Npm.require("connect");
+var fs = (typeof(Npm) == "undefined") ? __meteor_bootstrap__.require("fs") : Npm.require("fs");
+var path = (typeof(Npm) == "undefined") ? __meteor_bootstrap__.require("path") : Npm.require("path");
+var Fiber = (typeof(Npm) == "undefined") ? __meteor_bootstrap__.require("fibers") : Npm.require("fibers");
 
 __meteor_bootstrap__.app
     .use(connect.query())
