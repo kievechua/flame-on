@@ -3,11 +3,21 @@ Package.describe({
 });
 
 Package.on_use(function (api) {
-    api.add_files('angular-ui.min.css', 'client');
+    // Use Meteor's library
+    api.use('coffeescript', ['client', 'server']);
 
-    api.add_files('angular.min.js', 'client');
-    api.add_files('angular-ui.min.js', 'client');
-    api.add_files('angular-ui-ieshiv.min.js', 'client');
+    // Dependencies
+    // Dependencies css
+    // api.add_files('angular-ui.min.css', 'client');
 
-    api.add_files('server.js', 'server');
+    // Dependencies js
+    api.add_files('components/angular/angular.min.js', 'client');
+    // api.add_files('angular-ui.min.js', 'client');
+    // api.add_files('angular-ui-ieshiv.min.js', 'client');
+
+    // Main library
+    api.add_files('flameOn.coffee', 'client');
+
+    // Server site file
+    api.add_files('server.coffee', 'server');
 });

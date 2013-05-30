@@ -1,4 +1,4 @@
-app.factory 'flameOn', ['$q', ($q) ->
+angular.module('flameOn', []).factory 'flameOn', ['$q', ($q) ->
     FlameOn = ($scope, name, options) ->
         Meteor.autosubscribe ->
             Meteor.subscribe name, options

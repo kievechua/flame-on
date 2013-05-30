@@ -1,0 +1,13 @@
+{
+    "name": "flame-on",
+    "version": "0.1.9",
+    "main": "server.coffee",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "components"
+    ],
+    "dependencies": {
+        "angular": "1.0.7"
+    }
+}
