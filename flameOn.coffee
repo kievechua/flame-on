@@ -1,101 +1,142 @@
 angular.module('flameOn', []).factory 'flameOn', ['$q', ($q) ->
-    FlameOn = ($scope, name, options) ->
-        Meteor.autosubscribe ->
-            Meteor.subscribe name, options
-        collection = Collection[name]
+    Collection = {}
 
-        collection:
-            findAndFetch: (selector, opts) ->
-                collection.find(selector, opts).fetch()
-            findAll: (opts) ->
-                this.find {}, opts
-            find: (selector, opts) ->
-                d = $q.defer()
-                list = []
+    class Collect
+        constructor: (name) ->
+            @collection = new Meteor.Collection name
+        findAndFetch: (selector, opts) ->
+            @collection.find(selector, opts).fetch()
+        findAllDirectly: (list, opts) ->
+            @collection.find({}, opts).observe({
+                addedAt: (item, i) ->
+                    list.splice i, 0, item
+                changedAt: (newDocument, oldDocument, atIndex) ->
+                    list.splice atIndex, 1, newDocument
+                movedTo: (oldDocument, oldIndex, newIndex) ->
+                    if newIndex < oldIndex
+                        list.splice oldIndex, 1
+                        list.splice newIndex, 0, oldDocument
+                    else
+                        list.splice oldIndex, 1
+                        list.splice newIndex, 0, oldDocument
+                removedAt: (oldDocument, atIndex) ->
+                    list.splice atIndex, 1
+            })
+        findAll: (scope, opts) ->
+            this.find scope, {}, opts
+        find: (scope, selector, opts) ->
+            d = $q.defer()
+            list = []
 
-                col = collection.find(selector, opts)
-                col.observe({
-                    addedAt: (item, i) ->
-                        list.splice i, 0, item
+            col = @collection.find(selector, opts)
+            col.observe({
+                addedAt: (item, i) ->
+                    list.splice i, 0, item
 
-                        d.resolve list
+                    d.resolve list
 
-                        $scope.$apply() if !$scope.$$phase
-                    changedAt: (newDocument, oldDocument, atIndex) ->
-                        list.splice atIndex, 1, newDocument
+                    scope.$apply() if !scope.$$phase
+                changedAt: (newDocument, oldDocument, atIndex) ->
+                    list.splice atIndex, 1, newDocument
 
-                        d.resolve list
+                    d.resolve list
 
-                        $scope.$apply() if !$scope.$$phase
-                    movedTo: (document, oldIndex, newIndex) ->
-                        if newIndex < oldIndex
-                            list.splice oldIndex, 1
-                            list.splice newIndex, 0, document
-                        else
-                            list.splice oldIndex, 1
-                            list.splice newIndex, 0, document
+                    scope.$apply() if !scope.$$phase
+                movedTo: (oldDocument, oldIndex, newIndex) ->
+                    if newIndex < oldIndex
+                        list.splice oldIndex, 1
+                        list.splice newIndex, 0, oldDocument
+                    else
+                        list.splice oldIndex, 1
+                        list.splice newIndex, 0, oldDocument
 
-                        d.resolve list
+                    d.resolve list
 
-                        $scope.$apply() if !$scope.$$phase
-                    removedAt: (oldDocument, atIndex) ->
-                        list.splice atIndex, 1
+                    scope.$apply() if !scope.$$phase
+                removedAt: (oldDocument, atIndex) ->
+                    list.splice atIndex, 1
 
-                        d.resolve list
+                    d.resolve list
 
-                        $scope.$apply() if !$scope.$$phase
-                })
+                    scope.$apply() if !scope.$$phase
+            })
 
-                return d.promise;
-            findOne: (selector, opts) ->
-                d = $q.defer()
+            return d.promise;
+        findOne: (scope, selector, opts) ->
+            d = $q.defer()
 
-                col = collection.find(selector, opts)
-                col.observe({
-                    added: (item, i) ->
-                        d.resolve item
+            col = @collection.find(selector, opts)
+            col.observe({
+                addedAt: (item, i) ->
+                    d.resolve item
 
-                        $scope.$apply() if !$scope.$$phase
-                    # changed: (newDocument, atIndex, oldDocument) ->
-                    #     console.log(arguments, 'changed');
-                    # moved: (document, oldIndex, newIndex) ->
-                    #     console.log(arguments, 'moved');
-                    # removed: (oldDocument, atIndex) ->
-                    #     console.log(arguments, 'removed');
-                })
+                    scope.$apply() if !scope.$$phase
+            })
 
-                return d.promise;
-            insert: (doc) ->
-                d = $q.defer()
+            return d.promise;
+        insert: (doc, cb) ->
+            d = $q.defer()
 
-                # Remove angular object element such as $$hashKey
-                doc = angular.fromJson(angular.toJson(doc))
+            console.log 'doc', doc
+            @collection.insert doc, (err, result) ->
+                if err
+                    cb err
+                    d.reject err
+                    return
 
-                collection.insert doc, (err, result) ->
-                    return d.reject err if err
+                cb null, result
+                d.resolve result
 
-                    d.resolve result
+                # @scope.$apply() if !@scope.$$phase
 
-                    $scope.$apply() if !$scope.$$phase
+            return d.promise;
+        update: (selector, modifier, opts) ->
+            d = $q.defer()
 
-                return d.promise;
-            update: (selector, modifier, opts) ->
-                d = $q.defer()
+            if angular.isString selector
+                selector = _id: selector
 
-                # Remove angular object element such as $$hashKey
-                modifier = angular.fromJson(angular.toJson(modifier))
+            delete modifier._id
 
-                collection.update selector, modifier, opts, (err) ->
-                    return d.reject err if err
-                    d.resolve 'updated'
+            console.log modifier
+            @collection.update selector, modifier, opts, (err) ->
+                console.log err
+                return d.reject err if err
+                d.resolve 'updated'
 
-                return d.promise;
-            remove: (selector) ->
-                d = $q.defer()
+            return d.promise;
+        remove: (selector) ->
+            d = $q.defer()
 
-                collection.remove selector, (err) ->
-                    return d.reject err if err
-                    d.resolve 'removed'
+            @collection.remove selector, (err) ->
+                return d.reject err if err
+                d.resolve 'removed'
 
-                return d.promise;
+            return d.promise;
+
+    class FlameOn
+        constructor: (@name, options) ->
+            if @name
+                Meteor.subscribe.apply Meteor, arguments
+        subscribe: (name) ->
+            Meteor.subscribe.apply Meteor, arguments
+        call: ->
+            Meteor.call.apply Meteor, arguments
+        apply: ->
+            Meteor.apply.apply Meteor, arguments
+        methods: ->
+            Meteor.apply.methods Meteor, arguments
+        status: ->
+            Meteor.status()
+        reconnect: ->
+            Meteor.reconnect()
+        connect: ->
+            Meteor.apply.connect Meteor, arguments
+        user: ->
+            Meteor.user()
+        Collection: ->
+            if !Collection[@name]
+                Collection[@name] = new Collect @name
+
+            return Collection[@name]
 ]

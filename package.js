@@ -7,13 +7,8 @@ Package.on_use(function (api) {
     api.use('coffeescript', ['client', 'server']);
 
     // Dependencies
-    // Dependencies css
-    // api.add_files('angular-ui.min.css', 'client');
-
     // Dependencies js
     api.add_files('components/angular/angular.min.js', 'client');
-    // api.add_files('angular-ui.min.js', 'client');
-    // api.add_files('angular-ui-ieshiv.min.js', 'client');
 
     // Main library
     api.add_files('flameOn.coffee', 'client');
